@@ -1,16 +1,14 @@
 /*
- Instructions:
- (1) Refactor .forEach below to create a sequence of Promises that always resolves in the same
- order it was created.
- (a) Fetch each planet's JSON from the array of URLs in the search results.
- (b) Call createPlanetThumb on each planet's response data to add it to the page.
- (2) Use developer tools to determine if the planets are being fetched in series or in parallel.
+Instructions:
+(1) Use .map to fetch all the planets in parallel.
+  (a) Call .map on an array and pass it a function.
+  (b) .map will execute the function against each element in the array immediately.
  */
 
 // Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
 /* jshint unused: false */
 
-(function (document) {
+(function(document) {
   'use strict';
 
   var home = null;
@@ -36,14 +34,12 @@
   }
 
   /**
-   * XHR wrapped in a promise.
+   * XHR wrapped in a promise
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return fetch(url, {
-      method: 'get'
-    });
+    return fetch(url);
   }
 
   /**
@@ -52,28 +48,23 @@
    * @return {Promise}    - A promise that passes the parsed JSON response.
    */
   function getJSON(url) {
-    return get(url).then(function (response) {
+    return get(url).then(function(response) {
       return response.json();
     });
   }
 
-  window.addEventListener('WebComponentsReady', function () {
+  window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-     Refactor this code!
+    Your code goes here! Uncomment the next line when you're ready to start!
      */
+
     getJSON('../data/earth-like-results.json')
       .then(function (response) {
-
-        console.log(response);
         addSearchHeader(response.query);
 
-        var seq = Promise.resolve();
-
-        response.results.forEach(function (url) {
-          seq = seq.then(function () {
-            return getJSON(url);
-          }).then(createPlanetThumb);
+        response.results.map(url => {
+          getJSON(url).then(createPlanetThumb);
         });
       })
       .catch(function (error) {
